@@ -19,6 +19,9 @@ limitations under the License.
 package resolver
 
 import (
+	"fmt"
+	"strings"
+
 	discovery "k8s.io/api/discovery/v1"
 	"k8s.io/client-go/dynamic"
 	k8snet "k8s.io/utils/net"
@@ -43,6 +46,12 @@ func (i *Interface) GetDNSRecords(namespace, name, clusterID, hostname string, i
 
 	if serviceInfo.isHeadless() {
 		records, found := i.getHeadlessRecords(serviceInfo, ipFamily, clusterID, hostname)
+
+		var addresses []string
+		for _, record := range records {
+			addresses = append(addresses, fmt.Sprintf("%s (%s)", record.IP, record.ClusterName))
+		}
+		logger.Infof("Found %d records for host '%s': \n\t%s", len(records), hostname, strings.Join(addresses, "\n\t"))
 
 		return records, true, found
 	}
