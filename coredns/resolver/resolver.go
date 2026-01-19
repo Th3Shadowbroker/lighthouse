@@ -155,6 +155,13 @@ func (i *Interface) getHeadlessRecordsForIPFamily(ipFamilyInfo *IPFamilyInfo, cl
 	case !clusterFound:
 		return nil, false
 	case hostname == "":
+		for key, val := range clusterInfo.endpointRecordsByHost {
+			logger.Infof("%s:", key)
+			for _, record := range val {
+				logger.Infof("\t%s", record.IP)
+			}
+		}
+
 		return clusterInfo.endpointRecords, true
 	default:
 		records, found := clusterInfo.endpointRecordsByHost[hostname]
